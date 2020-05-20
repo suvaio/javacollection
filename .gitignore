@@ -48,3 +48,4 @@ target/
 velocity.log
 
 src/main/mule/filedownload.xml
+src/**/filedownload.xml

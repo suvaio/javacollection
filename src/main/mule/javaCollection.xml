@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<flow name="javaCollectionFlow" doc:id="da509eb8-f488-4d1e-b302-5e6d8d9089df" initialState="started">
+		<http:listener doc:name="Listener" doc:id="749e40d2-78f8-4d51-afcc-bc471f5af382" config-ref="HTTP_Listener_config" path="/until-successful"/>
+		<java:new doc:name="Java Collection ArrayList" doc:id="6f49be43-90dc-4e27-95d6-d8e429746cc0" class="java.util.ArrayList" target="arrayList" constructor="ArrayList()"/>
+		<set-variable value="#[output application/java --- []]" doc:name="Array(count)" doc:id="edf183e7-3f3d-4c0b-a6ab-d1492783941f" variableName="count"/>
+		<until-successful maxRetries="200" doc:name="Until Successful" doc:id="5b811828-88af-41ce-bbc6-0c75de4ed12a" millisBetweenRetries="1000">
+			<java:invoke doc:name="Add an element to Java Collection ArrayList" doc:id="b60bf106-6c2a-4590-81c0-b617f78fa4d8" instance="#[vars.arrayList]" class="java.util.ArrayList" method="add(java.lang.Object)">
+				<java:args ><![CDATA[#[{
+	arg0 : randomInt(1000)
+}]]]></java:args>
+			</java:invoke>
+			<set-variable value='#[vars.count + (randomInt(1000) as String)]' doc:name="Add an element to (count)Array" doc:id="4e51ba9a-57e8-4bf0-b777-f67cada8d8ce" variableName="count"/>
+				<choice doc:name="Choice" doc:id="cedbf79c-04d5-4e19-aa00-c88782ba36d2">
+				<when expression="#[sizeOf(vars.arrayList) &lt; 4]">
+					<raise-error doc:name="Raise error" doc:id="b788e6a6-caef-48b6-b3e8-a667eb2fc396" type="APP:ERROR" />
+					</when>
+					<otherwise>
+						<logger level="INFO" doc:name="Logger" doc:id="2cb4c8f9-abd5-4f89-a0e7-cea06b60a814" message="default" />
+					</otherwise>
+			</choice>
+		</until-successful>
+		<logger level="INFO" doc:name="Logger" doc:id="34c725b2-dba7-49da-8af7-fe90c22ccf70" message="#[vars.storeVal]"/>
+	</flow>
+</mule>
